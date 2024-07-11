@@ -1,7 +1,7 @@
 <%  layout("/layouts/boilerplate")%>
 <div class="row mt-3">
   <div class="col-8 offset-3">
-    <h3> Listing Details :</h3>
+    <h3> <%= listing.title %></h3>
    </div>
     <div class="card col-6 offset-3 show-card">
       <img src="<%= listing.image %>>"
@@ -9,7 +9,7 @@
         alt="listing_image"/>
   <div class="card-body">
     <p class="card-text">
-    <b><%= listing.title %> </b>  <br>
+
       <%= listing.description %> <br>
       &#8377;<%= listing.price ? listing.price.toLocaleString("en-IN") : 'N/A' %> <br>
    <%= listing.location %> <br>
@@ -20,9 +20,25 @@
     
     <br />
     <div class="btns">
-      <a href="/listings/<%= listing._id %>/edit" class="btn btn-dark col-1 offset-3">Edit</a>
+      <a href="/listings/<%= listing._id %>/edit" class="btn btn-dark col-1 offset-3 edit-btn">Edit</a>
       <form method="POST" action="/listings/<%=listing._id%>?_method=DELETE">
         <button class="btn btn-dark   offset-5">Delete </button>
       </form>
+      </div>
+      <div class="col-8 offset-3 mb-3"  >
+        <hr>
+        <h3>Leave a Review</h3>
+      <form action="/listings/<%= listing.id %>/reviews" method="post">
+        <div class="mb-3 mt-3">
+          <label for="rating" class="form-label">Rating</label>
+          <input type="range" min="0" max="5"  step="0.5" id="rating" nane="review[rating]"  class="form-range">
+        </div>
+        <div  class="mb-3 mt-3">
+          <label for="comment" class="form-label">Comment</label>
+          <textarea name="review[comment]" id="comment" cols="30"  rows="5" class="form-control"></textarea>
+          <button class="btn btn-outline-dark mt-3">Submit</button>
+        </div>
+      </form>
+      </div>
     </div>
-</div>
+
