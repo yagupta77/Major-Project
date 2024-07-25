@@ -14,7 +14,7 @@ const LocalStrategy = require("passport-local")
 const User = require("./models/users.js")
 const userRouter = require("./routes/user.js");
 const { required } = require("joi");
-
+const { listingSchema } = require("./schema.js")
 
 
 
@@ -86,6 +86,7 @@ const validateListing = (req, res, next) => {
 app.use((req,res,next)=>{
    res.locals.success = req.flash("success");
   res.locals.error = req.flash("error");
+  res.locals.currUser = req.user
   next();
  })
 
