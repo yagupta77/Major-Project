@@ -43,12 +43,23 @@ module.exports.validateListing = (req, res, next) => {
   }
 };
 
+
 module.exports.validateReview = (req, res, next) => {
   const { error } = reviewSchema.validate(req.body);
   if (error) {
-    const msg = error.details.map(el => el.message).join(',');
-    throw new ExpressError(400, msg);
+    const msg = error.details.map(el => el.message).join(",");
+    throw new ExpressError(msg, 400);
   } else {
     next();
   }
 };
+module.exports.isReviewAuthor = async(req, res, next) => {
+  const { id,reviewId } = req.params;
+  let review =await Review.findById(reviewId)
+  if (!review.author.equals(res.locals.currUser._id)) {
+   req.flash("error", "You are not the author of this review")
+   return res.redirect(`./listings/${id}`)
+  }  
+    next();
+  }
+

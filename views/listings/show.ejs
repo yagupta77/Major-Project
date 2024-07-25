@@ -45,12 +45,12 @@
       <% listing.reviews.forEach(review => { %>
         <div class="card col-5 mb-3 ms-3">
           <div class="card-body">
-            <h5 class="card-title"><%= review.author.username %></h5>
-            <p class="card-text"><%= review.comment %></p>
+           <b> <h7 class="card-title mt-2 "><%= review.author.username %></h7></b>
+            <p class="card-text mt-3"><%= review.comment %></p>
             <p class="card-text"><%= review.rating %> stars</p>
             <% if (currUser && review.author._id.equals(currUser._id)) { %>
               <form method="POST" action="/listings/<%= listing._id %>/reviews/<%= review._id %>?_method=DELETE" class="d-inline">
-                <button class="btn btn-sm btn-dark">Delete</button>
+                <button class="btn btn-sm btn-dark mb-3  ">Delete</button>
               </form>
             <% } %>
           </div>
