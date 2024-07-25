@@ -4,9 +4,7 @@ const Listing = require("../models/listing.js");
 const wrapAsync = require("../utils/wrapAsync");
 const { listingSchema } = require("../schema.js");
 const ExpressError = require("../utils/ExpressError.js");
-const { isLoggedIn, isOwner,validateListing } = require("../middleware.js");
-
-
+const { isLoggedIn, isOwner, validateListing } = require("../middleware.js");
 
 // Index Route
 router.get(
@@ -30,9 +28,12 @@ router.get(
     if (id.length !== 24) {
       throw new ExpressError("Page not found", 404);
     }
-    const listing = await Listing.findById(id)
-      .populate("reviews")
-      .populate("owner");
+    const listing = await Listing.findById(id).populate({
+      path: "reviews",
+      populate: {
+        path: "author",
+      },
+    });
     if (!listing) {
       req.flash("error", "Listing with this id does not exist");
       return res.redirect("/listings");
@@ -108,4 +109,3 @@ router.delete(
 );
 
 module.exports = router;
-

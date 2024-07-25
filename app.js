@@ -112,3 +112,12 @@ app.use((err, req, res, next) => {
 app.listen(8080, () => {
   console.log("Server is listening on port 8080");
 });
+
+
+app.use((err, req, res, next) => {
+  const { statusCode = 500, message = "Something went wrong" } = err;
+  if (!Number.isInteger(statusCode)) {
+    console.error('Invalid status code', statusCode); // Debugging line
+  }
+  res.status(statusCode).render("error.ejs", { message });
+});
