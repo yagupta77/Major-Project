@@ -65,8 +65,10 @@ app.use(express.static(path.join(__dirname, "/public")));
 // Validate Listing Middleware
 const validateListing = (req, res, next) => {
   const { error } = listingSchema.validate(req.body);
+ 
   if (error) {
     const msg = error.details.map(el => el.message).join(',');
+    console.log(msg)
     throw new ExpressError(msg, 400);
   } else {
     next();
