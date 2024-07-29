@@ -5,15 +5,15 @@
   </div>
   <div class="card col-6 offset-3 show-card listing-card">
     <img
-      src="<%= listing.image %>"
+      src="<%= listing.image ? listing.image : '/path/to/default/image.jpg' %>"
       class="card-img-top show-img"
-      alt="listing_image" />
+      alt="listing_image"
+    />
     <div class="card-body">
       <p class="card-text">Owned by: <i><%= listing.owner.username %></i></p>
       <p class="card-text"><%= listing.description %></p>
       <p class="card-text">
-        &#8377;<%= listing.price ? listing.price.toLocaleString("en-IN") : 'N/A'
-        %>
+        &#8377;<%= listing.price ? listing.price.toLocaleString("en-IN") : 'N/A' %>
       </p>
       <p class="card-text"><%= listing.location %></p>
       <p class="card-text"><%= listing.country %></p>
@@ -24,8 +24,7 @@
     <a
       href="/listings/<%= listing._id %>/edit"
       class="btn btn-dark col-1 offset-3 edit-btn"
-      >Edit</a
-    >
+    >Edit</a>
     <form
       method="POST"
       action="/listings/<%= listing._id %>?_method=DELETE"
@@ -53,7 +52,8 @@
           name="review[rating]"
           value="0"
           checked
-          aria-label="No rating." />
+          aria-label="No rating."
+        />
         <input type="radio" id="second-rate1" name="review[rating]" value="1" />
         <label for="second-rate1" title="Terrible">1 star</label>
         <input type="radio" id="second-rate2" name="review[rating]" value="2" />
@@ -91,8 +91,7 @@
       <% listing.reviews.forEach(review => { %>
       <div class="card col-5 mb-3 ms-3">
         <div class="card-body">
-          <b><h7 class="card-title mt-2">@<%= review.author.username %></h7></b
-          ><br />
+          <b><h7 class="card-title mt-2">@<%= review.author.username %></h7></b><br />
           <p
             class="starability-result card-text mt-2"
             data-rating="<%= review.rating %>"></p>
@@ -111,3 +110,4 @@
     </div>
   </div>
 </div>
+
