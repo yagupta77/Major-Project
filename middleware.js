@@ -1,4 +1,5 @@
 const Listing = require("./models/listing");
+const Review = require("./models/review"); 
 const { listingSchema, reviewSchema } = require("./schema.js");
 const ExpressError = require("./utils/ExpressError.js");
 
@@ -42,20 +43,18 @@ module.exports.validateListing = (req, res, next) => {
     next();
   }
 };
+module.exports.validateListing = (req, res, next) => {
+  console.log("Request body:", req.body); // Log the request body
+  const { error } = listingSchema.validate(req.body);
+  if (error) {
+    const msg = error.details.map(el => el.message).join(", ");
+    console.log("Validation error:", msg); // Log the validation error messages
+    throw new ExpressError(msg, 400);
+  } else {
+    next();
+  }
+};
 
-module.exports.validateReview = (req, res, next) => {
-
-
-  
-    const { error } = reviewSchema.validate(req.body);
-    console.log(error)
-    if (error) {
-      const msg = error.details.map(el => el.message).join(",");
-      throw new ExpressError(msg, 400);
-    } else {
-      next();
-    }
-  };
 module.exports.isReviewAuthor = async(req, res, next) => {
   const { id,reviewId } = req.params;
   let review =await Review.findById(reviewId)

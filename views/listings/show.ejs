@@ -1,13 +1,13 @@
 <% layout("/layouts/boilerplate") %>
 <div class="row mt-3">
-  <div class="col-8 offset-3">
+  <div class="col-8 offset-2">
     <h3><%= listing.title %></h3>
   </div>
-  <div class="card col-6 offset-3 show-card listing-card">
+  <div class="card col-8 offset-2 show-card listing-card">
     <img
       src="<%= listing.image ? listing.image : '/path/to/default/image.jpg' %>"
       class="card-img-top show-img"
-      alt="listing_image"
+      alt="Listing Image"
     />
     <div class="card-body">
       <p class="card-text">Owned by: <i><%= listing.owner.username %></i></p>
@@ -23,16 +23,16 @@
   <div class="btns">
     <a
       href="/listings/<%= listing._id %>/edit"
-      class="btn btn-dark col-1 offset-3 edit-btn"
+      class="btn btn-dark col-2 offset-2 edit-btn"
     >Edit</a>
     <form
       method="POST"
       action="/listings/<%= listing._id %>?_method=DELETE"
       class="d-inline">
-      <button class="btn btn-dark offset-5">Delete</button>
+      <button class="btn btn-dark">Delete</button>
     </form>
   </div>
-  <div class="col-8 offset-3 mb-3">
+  <div class="col-8 offset-2 mb-3">
     <hr />
     <h3>Leave a Review</h3>
     <% if (currUser) { %>
@@ -54,16 +54,16 @@
           checked
           aria-label="No rating."
         />
-        <input type="radio" id="second-rate1" name="review[rating]" value="1" />
-        <label for="second-rate1" title="Terrible">1 star</label>
-        <input type="radio" id="second-rate2" name="review[rating]" value="2" />
-        <label for="second-rate2" title="Not good">2 stars</label>
-        <input type="radio" id="second-rate3" name="review[rating]" value="3" />
-        <label for="second-rate3" title="Average">3 stars</label>
-        <input type="radio" id="second-rate4" name="review[rating]" value="4" />
-        <label for="second-rate4" title="Very good">4 stars</label>
-        <input type="radio" id="second-rate5" name="review[rating]" value="5" />
-        <label for="second-rate5" title="Amazing">5 stars</label>
+        <input type="radio" id="rate-1" name="review[rating]" value="1" />
+        <label for="rate-1" title="Terrible">1 star</label>
+        <input type="radio" id="rate-2" name="review[rating]" value="2" />
+        <label for="rate-2" title="Not good">2 stars</label>
+        <input type="radio" id="rate-3" name="review[rating]" value="3" />
+        <label for="rate-3" title="Average">3 stars</label>
+        <input type="radio" id="rate-4" name="review[rating]" value="4" />
+        <label for="rate-4" title="Very good">4 stars</label>
+        <input type="radio" id="rate-5" name="review[rating]" value="5" />
+        <label for="rate-5" title="Amazing">5 stars</label>
       </fieldset>
       <div class="mb-3 mt-3">
         <label for="comment" class="form-label">Comment</label>
@@ -75,7 +75,7 @@
           class="form-control"
           required></textarea>
         <div class="invalid-feedback">
-          Please submit some comments for review
+          Please submit some comments for the review.
         </div>
         <button class="btn btn-outline-dark mt-3">Submit</button>
       </div>
@@ -89,14 +89,14 @@
     <p><b>All Reviews</b></p>
     <div class="row">
       <% listing.reviews.forEach(review => { %>
-      <div class="card col-5 mb-3 ms-3">
+      <div class="card col-md-5 mb-3 ms-3">
         <div class="card-body">
-          <b><h7 class="card-title mt-2">@<%= review.author.username %></h7></b><br />
+          <h6 class="card-title mt-2">@<%= review.author.username %></h6>
           <p
             class="starability-result card-text mt-2"
             data-rating="<%= review.rating %>"></p>
           <p class="card-text mt-1"><%= review.comment %></p>
-          <p class="card-text">
+          <% if (currUser && currUser._id.equals(review.author._id)) { %>
           <form
             method="POST"
             action="/listings/<%= listing._id %>/reviews/<%= review._id %>?_method=DELETE"
@@ -104,6 +104,7 @@
           >
             <button class="btn btn-sm btn-dark mb-3">Delete</button>
           </form>
+          <% } %>
         </div>
       </div>
       <% }) %>
