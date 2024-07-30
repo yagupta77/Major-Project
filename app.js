@@ -32,10 +32,7 @@ const sessionOptions = {
 
 // Connect to MongoDB
 const MONGO_URL = "mongodb://127.0.0.1:27017/wanderlust";
-mongoose.connect(MONGO_URL, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-});
+mongoose.connect(MONGO_URL)
 mongoose.connection.on("error", console.error.bind(console, "connection error:"));
 mongoose.connection.once("open", () => {
   console.log("Connected to DB");
