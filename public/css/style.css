@@ -101,9 +101,9 @@ card-img-overlay:hover{
    }
 
    /* Show Pages */
-   .show-img{
+   /* .show-img{
 height: 30vh;
-   }
+   } */
    .btns{
       display: flex;
    }
@@ -111,3 +111,21 @@ height: 30vh;
       padding-left: 0;
       padding-right: 0;
    }
+   /* MAP */
+   #form-map-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+  }
+  
+  #your-form {
+      margin-right: 20px; /* Add some space between the form and the map */
+  }
+  
+  #map {
+      width: 600px; /* Adjust width as needed */
+      height: 400px; /* Adjust height as needed */
+  }
+  
+  
+   

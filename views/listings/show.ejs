@@ -1,13 +1,18 @@
 <% layout("/layouts/boilerplate") %>
+<script>
+  const mapToken = "<%= process.env.MAP_TOKEN %>";
+</script>
 <div class="row mt-3">
   <div class="col-8 offset-2">
     <h3><%= listing.title %></h3>
   </div>
   <div class="card col-8 offset-2 show-card listing-card">
     <img
-      src="<%= listing.image ? listing.image : '/path/to/default/image.jpg' %>"
+      src="<%=listing.image.url%>"
       class="card-img-top show-img"
       alt="Listing Image"
+      style="height: 20rem;"
+      
     />
     <div class="card-body">
       <p class="card-text">Owned by: <i><%= listing.owner.username %></i></p>
@@ -20,10 +25,10 @@
     </div>
   </div>
   <br />
-  <div class="btns">
+  <div class="btns pl-1">
     <a
       href="/listings/<%= listing._id %>/edit"
-      class="btn btn-dark col-2 offset-2 edit-btn"
+      class="btn btn-dark col-md-1 offset-2 edit-btn  "
     >Edit</a>
     <form
       method="POST"
@@ -33,8 +38,8 @@
     </form>
   </div>
   <div class="col-8 offset-2 mb-3">
-    <hr />
     <h3>Leave a Review</h3>
+    <hr>
     <% if (currUser) { %>
     <form
       action="/listings/<%= listing._id %>/reviews"
@@ -86,8 +91,9 @@
     </div>
     <% } %>
     <hr />
-    <p><b>All Reviews</b></p>
+    <% if(listing.reviews.length>0) {%>
     <div class="row">
+    <p><b>All Reviews</b></p>
       <% listing.reviews.forEach(review => { %>
       <div class="card col-md-5 mb-3 ms-3">
         <div class="card-body">
@@ -109,6 +115,14 @@
       </div>
       <% }) %>
     </div>
+    <% } %>
+  </div>
+  <div class="col-8 offest-3 mb-3">
+    <div id="form-map-container">
+    <div id="map">
+    </div>
   </div>
 </div>
-
+</div>
+<script src="/js/map.js"></script>
+  

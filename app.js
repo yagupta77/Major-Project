@@ -87,7 +87,8 @@ app.use("/", userRouter);
 
 // 404 Error Handling
 app.all("*", (req, res, next) => {
-  next(new ExpressError("Page Not Found", 404));
+  let err= new ExpressError(404,"Page not found");
+  next(err);
 });
 
 // General Error Handling
