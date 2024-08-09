@@ -44,34 +44,40 @@ module.exports.show = async (req, res) => {
 };
 
 module.exports.createListing = async (req, res, next) => {
-  let response = await   geocodingClient.forwardGeocode({
-        query: 'Paris, France',
-        limit: 2
-      })
-        .send()
-        .then(response => {
-          const match = response.body;
-        })
-        .send();
-        console.log(respose);
-        res.send("done");
     try {
+        const response = await geocodingClient.forwardGeocode({
+            query: req.body.listing.location,
+            limit: 1,
+        }).send();
+
+        const match = response.body.features[0];
+
+        if (!match) {
+            req.flash("error", "Location not found");
+            return res.redirect("/listings/new");
+        }
+
         const { path: url, filename } = req.file;
         console.log(url, "..", filename);
 
         const newListing = new Listing(req.body.listing);
         newListing.image = { url, filename };
         newListing.owner = req.user._id;
-        await newListing.save();
+        newListing.geometry = match.geometry; // Assign geometry from geocoding response
+
+        let savedListing = await newListing.save();
+        console.log(savedListing);
 
         req.flash("success", "Listing created successfully!");
         res.redirect("/listings");
     } catch (err) {
-        console.log(err);
-        next(err);
+        console.error(err);
+        req.flash("error", "Something went wrong while creating the listing");
+        res.redirect("/listings/new");
     }
 };
 
+        
 module.exports.edit = async (req, res) => {
     const { id } = req.params;
     if (id.length !== 24) {

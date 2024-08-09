@@ -1,11 +1,20 @@
 
-    // TO MAKE THE MAP APPEAR YOU MUST
-    // ADD YOUR ACCESS TOKEN FROMs
-    // https://account.mapbox.com
+
+document.addEventListener('DOMContentLoaded', () => {
   mapboxgl.accessToken = mapToken;
-//   console.log(mapToken)
-      const map = new mapboxgl.Map({
-          container: 'map', // container ID
-          center: [-74.5, 40], // starting position [lng, lat]. Note that lat must be set between -90 and 90
-          zoom: 9 // starting zoom
-      });
+
+  const map = new mapboxgl.Map({
+      container: 'map',
+      style: 'mapbox://styles/mapbox/dark-v11',
+      center: listing.geometry.coordinates,
+      zoom: 8
+  });
+
+  // Create a new marker
+  const marker1 = new mapboxgl.Marker()
+      .setLngLat(listing.geometry.coordinates)
+      .setPopup(new mapboxgl.Popup({ offset: 25 }) // Create a popup with an offset
+          .setHTML(`<h4>${listing.location}</h4><p>Exact Location Provided</p>`) // Correct template literal syntax
+      )
+      .addTo(map);
+});

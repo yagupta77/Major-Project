@@ -31,12 +31,16 @@ const sessionOptions = {
 };
 
 // Connect to MongoDB
+// Connect to MongoDB
 const MONGO_URL = "mongodb://127.0.0.1:27017/wanderlust";
 mongoose.connect(MONGO_URL)
-mongoose.connection.on("error", console.error.bind(console, "connection error:"));
-mongoose.connection.once("open", () => {
+.then(() => {
   console.log("Connected to DB");
+})
+.catch((err) => {
+  console.error("Database connection error:", err);
 });
+
 
 // Middleware
 app.engine("ejs", ejsMate);
@@ -77,9 +81,9 @@ const validateListing = (req, res, next) => {
 };
 
 // Routes
-app.get("/", (req, res) => {
-  res.send("Hi, I am root");
-});
+// app.get("/", (req, res) => {
+//   res.send("Hi, I am root");
+// });
 
 app.use("/listings", listingsRouter);
 app.use("/listings/:id/reviews", reviewsRouter);
