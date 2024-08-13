@@ -85,6 +85,10 @@ card-img-overlay:hover{
    opacity: 0.2;
    background-color: white;
 }
+.card-img-overlay{
+   opacity: 0;
+   pointer-events: none;
+}
 
 /* New Pages */
 

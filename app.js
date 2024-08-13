@@ -11,6 +11,7 @@ const methodOverride = require("method-override");
 const ejsMate = require("ejs-mate");
 const ExpressError = require("./utils/ExpressError");
 const session = require("express-session");
+const MongoStore = require("connect-mongo")
 const flash = require("connect-flash");
 const passport = require("passport");
 const LocalStrategy = require("passport-local");
@@ -32,14 +33,21 @@ const sessionOptions = {
 
 // Connect to MongoDB
 // Connect to MongoDB
-const MONGO_URL = "mongodb://127.0.0.1:27017/wanderlust";
-mongoose.connect(MONGO_URL)
+// const MONGO_URL = "mongodb://127.0.0.1:27017/wanderlust";
+const dbUrl = process.env.ATLASDB_URL
+
+main()
 .then(() => {
   console.log("Connected to DB");
 })
 .catch((err) => {
   console.error("Database connection error:", err);
 });
+
+async function main() {
+  await mongoose.connect(dbUrl)
+  
+}
 
 
 // Middleware
