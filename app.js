@@ -11,7 +11,7 @@ const methodOverride = require("method-override");
 const ejsMate = require("ejs-mate");
 const ExpressError = require("./utils/ExpressError");
 const session = require("express-session");
-const MongoStore = require("connect-mongo")
+const MongoStore = require("connect-mongo");
 const flash = require("connect-flash");
 const passport = require("passport");
 const LocalStrategy = require("passport-local");
@@ -21,34 +21,43 @@ const reviewsRouter = require("./routes/review");
 const userRouter = require("./routes/user");
 const { listingSchema } = require("./schema");
 
+const dbUrl = process.env.ATLASDB_URL || "mongodb://127.0.0.1:27017/wanderlust";
+
+const store = MongoStore.create({
+  mongoUrl: dbUrl,
+  crypto: {
+    secret: process.env.SESSION_SECRET || "mysupersecretcode",
+  },
+  touchAfter: 24 * 3600, // time period in seconds
+});
+
+store.on("error", (err) => {
+  console.log("Error in Mongo session store", err);
+});
+
 const sessionOptions = {
-  secret: process.env.SECRET || "thisshouldbeabettersecret",
+  store: store,
+  name: 'session',
+  secret: process.env.SECRET || "mysupersecretcode",
   resave: false,
-  saveUninitialized: true,
+  saveUninitialized: false,
   cookie: {
-    expires: Date.now() + 7 * 24 * 60 * 60 * 1000,
     httpOnly: true,
-  }
+    expires: Date.now() + 7 * 24 * 60 * 60 * 1000, // 1 week
+    maxAge: 7 * 24 * 60 * 60 * 1000, // 1 week in milliseconds
+  },
 };
 
 // Connect to MongoDB
-// Connect to MongoDB
-// const MONGO_URL = "mongodb://127.0.0.1:27017/wanderlust";
-const dbUrl = process.env.ATLASDB_URL
-
-main()
-.then(() => {
-  console.log("Connected to DB");
-})
-.catch((err) => {
-  console.error("Database connection error:", err);
-});
-
 async function main() {
-  await mongoose.connect(dbUrl)
-  
+  try {
+    await mongoose.connect(dbUrl);
+    console.log("Connected to DB");
+  } catch (err) {
+    console.error("Database connection error:", err);
+  }
 }
-
+main();
 
 // Middleware
 app.engine("ejs", ejsMate);
@@ -89,17 +98,13 @@ const validateListing = (req, res, next) => {
 };
 
 // Routes
-// app.get("/", (req, res) => {
-//   res.send("Hi, I am root");
-// });
-
 app.use("/listings", listingsRouter);
 app.use("/listings/:id/reviews", reviewsRouter);
 app.use("/", userRouter);
 
 // 404 Error Handling
 app.all("*", (req, res, next) => {
-  let err= new ExpressError(404,"Page not found");
+  const err = new ExpressError("Page not found", 404);
   next(err);
 });
 
@@ -114,3 +119,8 @@ const port = process.env.PORT || 8080;
 app.listen(port, () => {
   console.log(`Server is listening on port ${port}`);
 });
+
+
+
+
+
