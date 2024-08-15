@@ -3,6 +3,7 @@ const ExpressError = require("../utils/ExpressError");
 const mapToken = process.env.MAP_TOKEN;
 const mbxGeocoding = require('@mapbox/mapbox-sdk/services/geocoding');
 const geocodingClient = mbxGeocoding({ accessToken: mapToken });
+const { cloudinary } = require("../cloudConfig");
 const mongoose = require("mongoose");
 
 // Index: Get all listings
@@ -138,5 +139,47 @@ module.exports.delete = async (req, res) => {
         res.redirect("/listings");
     }
 };
+module.exports.updateListing = async (req, res) => {
+    const { id } = req.params;
 
+    // Validate the ID
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+        req.flash("error", "Invalid listing ID");
+        return res.redirect("/listings");
+    }
+
+    try {
+        // Find the listing by ID
+        const listing = await Listing.findById(id);
+        if (!listing) {
+            req.flash("error", "Listing not found");
+            return res.redirect("/listings");
+        }
+
+        // Update the listing with the new data
+        Object.assign(listing, req.body.listing);
+
+        // If a new image is uploaded, update the image
+        if (req.file) {
+            // Delete the old image from Cloudinary (if you want to)
+            if (listing.image && listing.image.filename) {
+                await cloudinary.uploader.destroy(listing.image.filename);
+            }
+
+            // Update the listing's image with the new one
+            const { path: url, filename } = req.file;
+            listing.image = { url, filename };
+        }
+
+        // Save the updated listing
+        await listing.save();
+
+        req.flash("success", "Listing updated successfully");
+        res.redirect(`/listings/${listing._id}`);
+    } catch (err) {
+        console.error(err);
+        req.flash("error", "Something went wrong while updating the listing");
+        res.redirect("/listings");
+    }
+};
 
