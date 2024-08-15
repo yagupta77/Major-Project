@@ -1,9 +1,7 @@
 if (process.env.NODE_ENV !== "production") {
   require('dotenv').config();
 }
-
-console.log(`SESSION_SECRET: ${process.env.SESSION_SECRET}`);
-
+// Dependencies
 const express = require("express");
 const app = express();
 const mongoose = require("mongoose");
@@ -29,7 +27,7 @@ const dbUrl = process.env.ATLASDB_URL || "mongodb://127.0.0.1:27017/wanderlust";
 const store = MongoStore.create({
   mongoUrl: dbUrl,
   crypto: {
-    secret: process.env.SESSION_SECRET || "mysupersecretcode",
+    secret: process.env.SESSION_SECRET || process.env.SECRET,
   },
   touchAfter: 24 * 3600, // time period in seconds
 });
@@ -41,7 +39,7 @@ store.on("error", (err) => {
 const sessionOptions = {
   store: store,
   name: 'session',
-  secret: process.env.SESSION_SECRET || "mysupersecretcode",
+  secret: process.env.SESSION_SECRET || process.env.SECRET,
   resave: false,
   saveUninitialized: false,
   cookie: {
@@ -129,6 +127,8 @@ const port = process.env.PORT || 8080;
 app.listen(port, () => {
   console.log(`Server is listening on port ${port}`);
 });
+
+
 
 
 
