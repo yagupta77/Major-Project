@@ -111,10 +111,9 @@ app.all("*", (req, res, next) => {
 });
 
 // General Error Handling
-app.use((err, req, res, next) => {
-  const { statusCode = 500, message = "Something went wrong" } = err;
-  console.log(`Error Status Code: ${statusCode}, Message: ${message}`);
-  res.status(statusCode).render("error", { err });
+app.use((req, res, next) => {
+  console.log(`Request URL: ${req.originalUrl}`);
+  next();
 });
 
 // Start Server
