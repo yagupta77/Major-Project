@@ -21,8 +21,10 @@ const reviewsRouter = require("./routes/review");
 const userRouter = require("./routes/user");
 const { listingSchema } = require("./schema");
 
+// Database URL
 const dbUrl = process.env.ATLASDB_URL || "mongodb://127.0.0.1:27017/wanderlust";
 
+// Session Store
 const store = MongoStore.create({
   mongoUrl: dbUrl,
   crypto: {
@@ -110,8 +112,9 @@ app.all("*", (req, res, next) => {
 
 // General Error Handling
 app.use((err, req, res, next) => {
-  const { statusCode = 500, message = "Something went wrong" } = err;
-  res.status(statusCode).render("error", { message });
+  const { statusCode = 500 } = err;
+  if (!err.message) err.message = "Something went wrong";
+  res.status(statusCode).render("error", { err });
 });
 
 // Start Server
@@ -119,6 +122,7 @@ const port = process.env.PORT || 8080;
 app.listen(port, () => {
   console.log(`Server is listening on port ${port}`);
 });
+
 
 
 
