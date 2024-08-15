@@ -103,7 +103,6 @@ const validateListing = (req, res, next) => {
 app.get("/", (req, res) => {
   res.redirect("/listings");
 });
-// Routes
 app.use("/listings", listingsRouter);
 app.use("/listings/:id/reviews", reviewsRouter);
 app.use("/", userRouter);
