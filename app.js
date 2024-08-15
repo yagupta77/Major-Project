@@ -99,7 +99,7 @@ const validateListing = (req, res, next) => {
     next();
   }
 };
-
+//Routes
 app.get("/", (req, res) => {
   res.redirect("/listings");
 });
