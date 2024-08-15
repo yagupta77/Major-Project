@@ -1,29 +1,31 @@
 const Listing = require("../models/listing");
 const ExpressError = require("../utils/ExpressError");
 const mapToken = process.env.MAP_TOKEN;
-const mbxGeocoding= require('@mapbox/mapbox-sdk/services/geocoding');
+const mbxGeocoding = require('@mapbox/mapbox-sdk/services/geocoding');
 const geocodingClient = mbxGeocoding({ accessToken: mapToken });
+const mongoose = require("mongoose");
+
+// Index: Get all listings
 module.exports.index = async (req, res) => {
-    try {
-        const allListings = await Listing.find({});
-        res.render("listings/index.ejs", { allListings });
-    } catch (err) {
-        console.log(err);
-        req.flash("error", "Cannot retrieve listings");
-        res.redirect("/");
-    }
+    const allListings = await Listing.find({});
+    res.render("listings/index.ejs", { allListings });
 };
 
+// Render New Form: Display form to create a new listing
 module.exports.renderNewForm = (req, res) => {
     res.render("listings/new.ejs");
 };
 
+// Show: Display a specific listing
 module.exports.show = async (req, res) => {
     const { id } = req.params;
-    if (id.length !== 24) {
+
+    // Check if the ID is valid
+    if (!mongoose.Types.ObjectId.isValid(id)) {
         req.flash("error", "Page not found");
         return res.redirect("/listings");
     }
+
     try {
         const listing = await Listing.findById(id).populate({
             path: "reviews",
@@ -31,10 +33,12 @@ module.exports.show = async (req, res) => {
                 path: "author",
             },
         });
+
         if (!listing) {
-            req.flash("error", "Listing with this id does not exist");
+            req.flash("error", "Listing with this ID does not exist");
             return res.redirect("/listings");
         }
+
         res.render("listings/show.ejs", { listing });
     } catch (err) {
         console.log(err);
@@ -43,8 +47,10 @@ module.exports.show = async (req, res) => {
     }
 };
 
+// Create Listing: Handle the creation of a new listing
 module.exports.createListing = async (req, res, next) => {
     try {
+        // Geocode the location provided by the user
         const response = await geocodingClient.forwardGeocode({
             query: req.body.listing.location,
             limit: 1,
@@ -54,6 +60,12 @@ module.exports.createListing = async (req, res, next) => {
 
         if (!match) {
             req.flash("error", "Location not found");
+            return res.redirect("/listings/new");
+        }
+
+        // Check if file upload was successful
+        if (!req.file) {
+            req.flash("error", "Image upload failed");
             return res.redirect("/listings/new");
         }
 
@@ -77,25 +89,27 @@ module.exports.createListing = async (req, res, next) => {
     }
 };
 
-        
+// Edit: Render the form to edit an existing listing
 module.exports.edit = async (req, res) => {
     const { id } = req.params;
-    if (id.length !== 24) {
+
+    // Check if the ID is valid
+    if (!mongoose.Types.ObjectId.isValid(id)) {
         req.flash("error", "Page not found");
         return res.redirect("/listings");
     }
+
     try {
         const listing = await Listing.findById(id);
         if (!listing) {
-            req.flash("error", "Listing with this id does not exist");
+            req.flash("error", "Listing with this ID does not exist");
             return res.redirect("/listings");
         }
 
-        // Define and modify the originalImageUrl
+        // Modify the originalImageUrl to include specific dimensions
         let originalImageUrl = listing.image.url;
         originalImageUrl = originalImageUrl.replace("/upload", "/upload/h_300,w_250");
 
-        // Render the template with listing and originalImageUrl
         res.render("listings/edit.ejs", { listing, originalImageUrl });
     } catch (err) {
         console.log(err);
@@ -104,12 +118,16 @@ module.exports.edit = async (req, res) => {
     }
 };
 
+// Delete: Handle deletion of a specific listing
 module.exports.delete = async (req, res) => {
     const { id } = req.params;
-    if (id.length !== 24) {
+
+    // Check if the ID is valid
+    if (!mongoose.Types.ObjectId.isValid(id)) {
         req.flash("error", "Page not found");
         return res.redirect("/listings");
     }
+
     try {
         await Listing.findByIdAndDelete(id);
         req.flash("success", "Listing was deleted successfully");
@@ -120,4 +138,5 @@ module.exports.delete = async (req, res) => {
         res.redirect("/listings");
     }
 };
+
 
