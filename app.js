@@ -1,7 +1,8 @@
 if (process.env.NODE_ENV !== "production") {
   require('dotenv').config();
 }
-console.log(process.env.SECRET);
+
+console.log(`SESSION_SECRET: ${process.env.SESSION_SECRET}`);
 
 const express = require("express");
 const app = express();
@@ -40,7 +41,7 @@ store.on("error", (err) => {
 const sessionOptions = {
   store: store,
   name: 'session',
-  secret: process.env.SECRET || "mysupersecretcode",
+  secret: process.env.SESSION_SECRET || "mysupersecretcode",
   resave: false,
   saveUninitialized: false,
   cookie: {
@@ -104,6 +105,12 @@ app.use("/listings", listingsRouter);
 app.use("/listings/:id/reviews", reviewsRouter);
 app.use("/", userRouter);
 
+// Route Debugging
+app.use((req, res, next) => {
+  console.log(`Request URL: ${req.originalUrl}`);
+  next();
+});
+
 // 404 Error Handling
 app.all("*", (req, res, next) => {
   const err = new ExpressError("Page not found", 404);
@@ -111,9 +118,10 @@ app.all("*", (req, res, next) => {
 });
 
 // General Error Handling
-app.use((req, res, next) => {
-  console.log(`Request URL: ${req.originalUrl}`);
-  next();
+app.use((err, req, res, next) => {
+  const { statusCode = 500, message = "Something went wrong" } = err;
+  console.log(`Error Status Code: ${statusCode}, Message: ${message}`);
+  res.status(statusCode).render("error", { err });
 });
 
 // Start Server
@@ -121,6 +129,7 @@ const port = process.env.PORT || 8080;
 app.listen(port, () => {
   console.log(`Server is listening on port ${port}`);
 });
+
 
 
 
