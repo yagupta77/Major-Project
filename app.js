@@ -1,6 +1,8 @@
 if (process.env.NODE_ENV !== "production") {
   require('dotenv').config();
 }
+
+
 // Dependencies
 const express = require("express");
 const app = express();
@@ -27,7 +29,7 @@ const dbUrl = process.env.ATLASDB_URL || "mongodb://127.0.0.1:27017/wanderlust";
 const store = MongoStore.create({
   mongoUrl: dbUrl,
   crypto: {
-    secret: process.env.SESSION_SECRET || process.env.SECRET,
+    secret: process.env.SESSION_SECRET || "defaultSessionSecret",
   },
   touchAfter: 24 * 3600, // time period in seconds
 });
@@ -39,7 +41,7 @@ store.on("error", (err) => {
 const sessionOptions = {
   store: store,
   name: 'session',
-  secret: process.env.SESSION_SECRET || process.env.SECRET,
+  secret: process.env.SESSION_SECRET || "defaultSessionSecret",
   resave: false,
   saveUninitialized: false,
   cookie: {
@@ -82,7 +84,7 @@ passport.deserializeUser(User.deserializeUser());
 app.use((req, res, next) => {
   res.locals.success = req.flash("success");
   res.locals.error = req.flash("error");
-  res.locals.currUser = req.user;
+  res.locals.currUser = req.user; // Ensure currUser is set
   next();
 });
 
@@ -127,6 +129,7 @@ const port = process.env.PORT || 8080;
 app.listen(port, () => {
   console.log(`Server is listening on port ${port}`);
 });
+
 
 
 
