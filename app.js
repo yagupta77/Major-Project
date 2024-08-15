@@ -112,10 +112,10 @@ app.all("*", (req, res, next) => {
 
 // General Error Handling
 app.use((err, req, res, next) => {
-  const { statusCode = 500 } = err;
-  if (!err.message) err.message = "Something went wrong";
+  const { statusCode = 500, message = "Something went wrong" } = err;
   res.status(statusCode).render("error", { err });
 });
+
 
 // Start Server
 const port = process.env.PORT || 8080;
